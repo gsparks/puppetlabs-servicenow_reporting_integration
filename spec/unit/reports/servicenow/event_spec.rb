@@ -19,7 +19,7 @@ describe 'ServiceNow report processor: event_management mode' do
     expect_sent_event(expected_credentials) do |actual_event|
       additional_info = JSON.parse(actual_event['additional_info'])
       expect(actual_event['source']).to eql('Puppet')
-      expect(actual_event['type']).to eql('node_report_changed')
+      expect(actual_event['type']).to eql('node_report_changed_intentionally')
       expect(actual_event['severity']).to eql('5')
       expect(actual_event['node']).to eql('fqdn')
       expect(actual_event['description']).to match(%r{test_console})
@@ -50,7 +50,7 @@ describe 'ServiceNow report processor: event_management mode' do
 
     expect_sent_event(expected_credentials) do |actual_event|
       expect(actual_event['source']).to eql('Puppet')
-      expect(actual_event['type']).to eql('node_report_changed')
+      expect(actual_event['type']).to eql('node_report_changed_intentionally')
       expect(actual_event['severity']).to eql('5')
       expect(actual_event['node']).to eql('fqdn')
       expect(actual_event['description']).to match(%r{test_console})
