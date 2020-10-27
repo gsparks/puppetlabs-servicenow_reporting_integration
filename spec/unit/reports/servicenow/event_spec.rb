@@ -19,7 +19,7 @@ describe 'ServiceNow report processor: event_management mode' do
     expect_sent_event(expected_credentials) do |actual_event|
       additional_info = JSON.parse(actual_event['additional_info'])
       expect(actual_event['source']).to eql('Puppet')
-      expect(actual_event['type']).to eql('node_report_changed_intentionally')
+      expect(actual_event['type']).to eql('node_report_intentional_changes')
       expect(actual_event['severity']).to eql('5')
       expect(actual_event['node']).to eql('fqdn')
       expect(actual_event['description']).to match(%r{test_console})
@@ -50,7 +50,7 @@ describe 'ServiceNow report processor: event_management mode' do
 
     expect_sent_event(expected_credentials) do |actual_event|
       expect(actual_event['source']).to eql('Puppet')
-      expect(actual_event['type']).to eql('node_report_changed_intentionally')
+      expect(actual_event['type']).to eql('node_report_intentional_changes')
       expect(actual_event['severity']).to eql('5')
       expect(actual_event['node']).to eql('fqdn')
       expect(actual_event['description']).to match(%r{test_console})
@@ -73,13 +73,13 @@ describe 'ServiceNow report processor: event_management mode' do
   end
 
   it 'sends a node_report_failure' do
-    allow(processor).to receive(:status).and_return 'failure'
+    allow(processor).to receive(:status).and_return 'failed'
     allow(processor).to receive(:host).and_return 'fqdn'
-    mock_event_as_resource_status(processor, 'failure', false, false)
+    mock_event_as_resource_status(processor, 'failed', false, false)
 
     expect_sent_event(expected_credentials) do |actual_event|
       expect(actual_event['source']).to eql('Puppet')
-      expect(actual_event['type']).to eql('node_report_failure')
+      expect(actual_event['type']).to eql('node_report_failed')
       expect(actual_event['severity']).to eql('3')
       expect(actual_event['node']).to eql('fqdn')
       expect(actual_event['description']).to match(%r{test_console})
@@ -119,7 +119,7 @@ describe 'ServiceNow report processor: event_management mode' do
   end
 
   it 'includes multiple labels in a description' do
-    events = [new_mock_event(status: 'success', corrective_change: true), new_mock_event(status: 'failure')]
+    events = [new_mock_event(status: 'success', corrective_change: true), new_mock_event(status: 'failed')]
     mock_resource_statuses = new_mock_resource_status(events, true, true)
     allow(processor).to receive(:resource_statuses).and_return('mock_resource' => mock_resource_statuses)
 
@@ -158,7 +158,7 @@ describe 'ServiceNow report processor: event_management mode' do
             end
 
             events = [
-              new_mock_event(status: 'failure'),
+              new_mock_event(status: 'failed'),
               new_mock_event(status: 'success', corrective_change: false),
             ]
             mock_events(processor_one, *events)
@@ -173,7 +173,7 @@ describe 'ServiceNow report processor: event_management mode' do
         context 'different status, same events' do
           before(:each) do
             [processor_one, processor_two].each do |processor|
-              mock_events(processor, new_mock_event(status: 'failure'))
+              mock_events(processor, new_mock_event(status: 'failed'))
               allow(processor).to receive(:facts).and_return(facts)
             end
 
@@ -191,7 +191,7 @@ describe 'ServiceNow report processor: event_management mode' do
               allow(processor).to receive(:facts).and_return(facts)
             end
 
-            mock_events(processor_one, new_mock_event(status: 'failure'))
+            mock_events(processor_one, new_mock_event(status: 'failed'))
             mock_events(processor_two, new_mock_event(status: 'success'))
           end
 
@@ -219,7 +219,7 @@ describe 'ServiceNow report processor: event_management mode' do
   end
 
   context 'sends the appropriate event severity' do
-    examples = [{ status: 'failure', event_corrective_change: false, expected_severity: '3', status_changed: true, status_failed: false },
+    examples = [{ status: 'failed', event_corrective_change: false, expected_severity: '3', status_changed: true, status_failed: false },
                 { status: 'success', event_corrective_change: true,  expected_severity: '4', status_changed: true, status_failed: false },
                 { status: 'noop',    event_corrective_change: true,  expected_severity: '4', status_changed: true, status_failed: false },
                 { status: 'success', event_corrective_change: false, expected_severity: '5', status_changed: true, status_failed: false },

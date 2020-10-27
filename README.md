@@ -29,7 +29,7 @@ To send events, classify your Puppet servers with the `servicenow_reporting_inte
 By default each event will include the following information:
 * __Source__: Puppet
 * __Node__: The node the agent ran on
-* __Type__: The type of event. Can be one of `node_report_changed_intentionally`, `node_report_changed_correctively`, `node_report_unchanged`, `node_report_failure`
+* __Type__: The type of event. Can be one of `node_report_intentional_changes`, `node_report_corrective_changes`, `node_report_unchanged`, `node_report_failed`
 * __Source instance__: The name of the Puppet server that generated the report
 * __Message Key__: A hash of all of the relevant report properties to ensure that future events are grouped together properly
 * __Severity__: The highest severity rating of all of the events that occurred in a given run. These severity levels can be configured via the `<change_type>_event_severity` class parameters, including the severity of `no_changes` reports via the `no_changes_events_severity` parameter.
@@ -51,7 +51,7 @@ The module will send a single event for every Puppet run on every node. If nothi
 
 If a change happens then the event type and severity will be updated, and any resources that changed will be listed in the description.
 
-If multiple events happen e.g. two resources make corrective changes, but a third resource fails, then the report type will be `node_report_failure`, the severity by default will be `Minor`. All three resources, the resource message that describes what happened, and the file and line where the resource can be found, will be included in the event description.
+If multiple events happen e.g. two resources make corrective changes, but a third resource fails, then the report type will be `node_report_failed`, the severity by default will be `Minor`. All three resources, the resource message that describes what happened, and the file and line where the resource can be found, will be included in the event description.
 
 Event severities can be configured via the `<change_type>_event_severity` class parameters.
 

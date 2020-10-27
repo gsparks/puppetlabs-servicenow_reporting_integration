@@ -157,7 +157,7 @@ class MockServiceNowInstance < Sinatra::Base
           'detail' => nil,
           'message' => message,
         },
-        'status' => 'failure',
+        'status' => 'failed',
       }.to_json
     end
 
